@@ -15,12 +15,6 @@ client = MongoClient(mongo_uri)
 db = client["qubit_database"]  # Database name
 collection = db["stocks"]  # Collection name
 
-# GET all stock news
-@app.route("/stocks", methods=["GET"])
-def get_all_stocks():
-    stocks = list(collection.find({}, {"_id": 0}))  # Exclude _id
-    return jsonify(stocks), 200
-
 # GET news for a specific stock (e.g., AAPL)
 @app.route("/stocks/<symbol>", methods=["GET"])
 def get_stock_news(symbol):
