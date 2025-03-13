@@ -1,4 +1,5 @@
 import os
+import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -9,8 +10,8 @@ mongo_uri = os.getenv("MONGO_URI")  # Ensure this is correct
 
 try:
     client = MongoClient(mongo_uri)  # 5 sec timeout
-    db = client["qubit_database"]  # Replace with your actual DB name
-    collection = db["stocks"]
+    db = client["quant_data"]
+    collection = db["news_articles"]
 
     # Check connection
     print(client.server_info())  # Should print server details
@@ -57,6 +58,18 @@ sample_data = [
     }
 ]
 
+# Need to run the following datetime command in order for publishedAt to actually
+# be inserted in datetime format instead of just a string
+sample_data_2 = [
+    {
+        "tickers": "AAPL",
+        "title": "Apple Stock Surges After Strong Earnings Report",
+        "content": "Apple reported better-than-expected quarterly earnings, driven by strong iPhone sales and growth in its services segment.",
+        "publishedAt": datetime.datetime.fromisoformat("2025-03-10T14:30:00Z"),
+        "source": "Bloomberg"
+    }
+]
+
 # Insert data into MongoDB
-insert_result = collection.insert_many(sample_data)
+insert_result = collection.insert_many(sample_data_2)
 print(f"Inserted {len(insert_result.inserted_ids)} documents.")
