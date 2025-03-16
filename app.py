@@ -34,7 +34,7 @@ def get_stock_news(symbol):
 
 # GET news articles for a specific company
 @app.route("/articles/<source_name>/<company>", methods=["GET"])
-def get_stock_news(source_name, company):
+def get_company_news(source_name, company):
     limit = request.args.get("limit", default=10, type=int)
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
