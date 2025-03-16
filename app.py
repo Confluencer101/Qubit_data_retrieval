@@ -12,8 +12,8 @@ app = Flask(__name__)
 
 # Connect to MongoDB
 client = MongoClient(mongo_uri)
-db = client["qubit_database"]  # Database name
-collection = db["stocks"]  # Collection name
+db = client["quant_data"]
+collection = db["news_articles"]
 
 # GET news for a specific stock (e.g., AAPL)
 @app.route("/stocks/<symbol>", methods=["GET"])
