@@ -109,9 +109,21 @@ def formattingADAGE(data, time_now, source_name):
         # Assumes the data variable is a list, and in the correct format for
         # ADAGE 3.0's events[] list
         adage_data["events"] = data
+    else:
+        # May have different behaviour for other news sources, but for now we
+        # assume it should do the same thing
+
+        adage_data["data_source"] = source_name
+        adage_data["dataset_type"] = "News data"
+        adage_data["dataset_id"] = "1"
+        adage_data["time_object"]["timestamp"] = time_now
+
+        # Assumes the data variable is a list, and in the correct format for
+        # ADAGE 3.0's events[] list
+        adage_data["events"] = data
     return adage_data
 
-# Function that finds the newest and oldest article in the database
+# Function that finds the date of the newest and oldest articles in the database
 # (overall, or for a particular company)
 def newest_oldest_article(source_name, company):
     if (source_name == "news_api_org"):
@@ -137,10 +149,10 @@ def newest_oldest_article(source_name, company):
 
     query.append({"$group": find_newest_oldest})
 
-    query_result = dict(collection.aggregate(find_newest_oldest))
+    query_result = list(collection.aggregate(query))
 
-    newest = query_result["newest"]
-    oldest = query_result["oldest"]
+    newest = query_result[0]["newest"]
+    oldest = query_result[0]["oldest"]
 
     return newest, oldest
 
