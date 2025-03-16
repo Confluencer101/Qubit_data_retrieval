@@ -111,5 +111,38 @@ def formattingADAGE(data, time_now, source_name):
         adage_data["events"] = data
     return adage_data
 
+# Function that finds the newest and oldest article in the database
+# (overall, or for a particular company)
+def newest_oldest_article(source_name, company):
+    if (source_name == "news_api_org"):
+        collection = db["news_api"]
+    else:
+        # news_articles is the default collection to retrieve data from
+        collection = db["news_articles"]
+
+    query = []
+
+    if company:
+        # If the company is not specified, the newest article overall will be found
+        match_company = {"$or": []}
+        match_company["$or"].append({"attribute.title": {"$regex": company, "$options": "i"}})
+        match_company["$or"].append({"attribute.description": {"$regex": company, "$options": "i"}})
+
+        query.append({"$match": match_company})
+
+    find_newest_oldest = {}
+    find_newest_oldest["_id"] = "null"
+    find_newest_oldest["newest"] = {"$max": "$time_object.timestamp"}
+    find_newest_oldest["oldest"] = {"$min": "$time_object.timestamp"}
+
+    query.append({"$group": find_newest_oldest})
+
+    query_result = dict(collection.aggregate(find_newest_oldest))
+
+    newest = query_result["newest"]
+    oldest = query_result["oldest"]
+
+    return newest, oldest
+
 if __name__ == "__main__":
     app.run(debug=True)
